@@ -11,6 +11,7 @@
   "dependencies": {
     "express": "^4.16.2",
     "request": "^2.83.0",
+    "response": "^0.18.0",
     "restful-js": "^0.7.1",
     "restful.js": "^0.9.6",
     "socket.io": "^2.0.4"

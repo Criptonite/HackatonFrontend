@@ -18,6 +18,10 @@ app.use("/static", express.static(path.join(__dirname, "/static")));
 
 // app.use("/static", express.static(path.join(__dirname, "/static")));
 
+const stack_basic = "https://stackoverflow.com/users/";
+
+let stack_links = [];
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
@@ -32,35 +36,55 @@ app.post("/findexperts", (req, res) => {
     let url_from_request = req.body.question;
     var options = {
         host: 'localhost',
-        port: 10000,
-        path: '/?link=\"' + url_from_request + '\"'
+        port: 10001,
+        headers: {"url": url_from_request},
+        path: "/find"
     };
     console.log(options);
-    let callback = () => {
-        var str = '';
-
+    let callback = (response) => {
+        let str = '';
         response.on('data', function (chunk) {
             str += chunk;
         });
 
         response.on('end', function () {
             console.log(str);
+
+            function sendLinks(str) {
+                let parsed = JSON.parse(str);
+
+                stack_links.push(stack_basic + parsed.ids[0])
+                stack_links.push(stack_basic + parsed.ids[1])
+                stack_links.push(stack_basic + parsed.ids[2])
+                console.log(stack_basic + parsed.ids[0])
+                console.log(stack_basic + parsed.ids[1])
+                console.log(stack_basic + parsed.ids[2])
+
+                server_socket.sockets.emit("infa", stack_links);
+            }
+
+            sendLinks(str)
         });
     };
     http.request(options, callback).end();
-    res.sendfile("./static/index.html");
+    res.sendfile("./static/result.html");
 });
 
-app.post("/");
+
+server_socket.on("connection", (socket) => {
+    socket.on("connect", () => {
+        console.log("Connected", socket.id)
+    });
+
+    socket.on("new user", () => {
+        console.log("Connected", socket.id)
+    });
+});
 
 
 function getIdFromUrl(url) {
     let post_id = url.match(/\d+/);
     return post_id[0];
-}
-
-function getBody(req_id) {
-
 }
 
 

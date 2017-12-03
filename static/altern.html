@@ -1,0 +1,42 @@
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.4/lodash.min.js"></script>
+</head>
+<body>
+
+<textarea id="text-id"></textarea>
+<button id="btn">Click</button>
+
+<table id="table-present">
+
+</table>
+
+<script id="table-row" type="text/template">
+    <% _.each(data, function(data) { %>
+    <tr>
+        <td><%= data.id %></td>
+        <td><img src="<%= data.img %>"></td>
+        <td><%= data.name %></td>
+    </tr>
+    </tr>
+    <% }); %>
+</script>
+
+<script type="text/javascript">
+    $('#btn').click( () => {
+        $.ajax({
+            type: 'GET',
+            url: '/registration/test',
+            data: {
+                id: $('#text-id').val(),
+            },
+            success: (data) => {
+                var template = _.template( $('#table-row').html() );
+                $('#table-present').html( template( {data: data} ) );
+            }
+        });
+    });
+</script>
+</body>
+</html>
